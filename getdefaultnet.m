@@ -10,16 +10,29 @@ net.group_sizes = [3, 2];
 net.N = sum(net.group_sizes);
 net.rand_seed = 1;
 
-net.delays = [];
-net.variance = [];
-net.w = [];
+net.delays = zeros(net.N);
+net.delays(1:3, 4:5) = 1;
+net.variance = zeros(net.N);
+net.variance(1:3, 4:5) = 0.1;
+net.w = zeros(net.N);
+net.w(1:3, 4:5) = 1;
 
-net.rest = -65;
-net.reset = -70;
+net.fgi = 130;
+net.neuron_tau = 20;
+net.delay_max = 15;
 
-net.sim_time_sec = 10;
-net.inp = [];
-net.ts = [];
+net.v_rest = -65;
+net.v_reset = -70;
+net.v_thres = -55;
+net.w_max = 10;
+net.taupre = 20;
+net.taupost = 20;
+net.Apost = 0.1;
+net.Apre = -0.1;
+
+net.sim_time_sec = 1;
+net.inp = [1, 2, 3, 1, 2 ,3];
+net.ts = [1, 5, 8, 501, 505, 508];
 
 net.voltages_to_save = [1 : net.N];
 
