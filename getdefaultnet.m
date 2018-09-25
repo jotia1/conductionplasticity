@@ -18,6 +18,14 @@ net.w = zeros(net.N);
 net.w(1:3, 4:5) = 1;
 
 net.fgi = 130;
+net.nu = 0.03;
+net.nv = 0.01;
+net.a1 = 3;
+net.a2 = 2;
+net.b1 = 5;
+net.b2 = 5;
+net.variance_min = 0.1;
+net.variance_max = 10;
 net.neuron_tau = 20;
 net.delay_max = 15;
 

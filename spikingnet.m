@@ -66,18 +66,42 @@ for sec = 1 :net.sim_time_sec
         last_spike_time(fired) = time; 
         
         v(fired_naturally) = net.v_reset;
+        
+        %% STDP
         % Any pre-synaptics weights should be increased
         w(:, fired) = w(:, fired) + (dApost(:, fired) .* conns(:, fired));
         % any post synaptic weights decreased
         w(fired, :) = w(fired, :) + (dApre(fired, :) .* conns(fired, :));
         dApost(fired, :) = dApost(fired, :) + net.Apost;
         dApre(:, fired) = dApre(:, fired) + net.Apre;
+        
+        %% SDVL
+        % TODO - consider if this should be done at the start of the ms or
+        % the end (here).
+        %[pre_idxs, post_idxs] = ind2sub(size(conns), find(conns(:, fired))); 
+        t0 = repmat(time - last_spike_time, 1, numel(fired));
+        t0_negu = t0 - delays(:, fired);  % TODO - check this works with multiple fired
+        abst0_negu = abs(t0_negu);
+        k = (variance(:, fired) + 0.9) .^2;
+        shifts = sign(t0_negu) .* k .* net.nu;
+        
+        % Update SDVL mean
+        du = zeros(size(t0_negu));
+        du(t0 > net.a2) = -k(t0 > net.a2) .* net.nu;
+        du(abst0_negu >= net.a1) = shifts(abst0_negu >= net.a1);% TODO: verify this line is correct, made an edit without checkign the maths.
+ 
+        delays(:, fired) = delays(:, fired) + (du .* conns(:, fired));
+        delays(conns) = max(1, min(net.delay_max, delays(conns)));
 
-        for spike = 1 : length(fired_naturally)
-            neuron_idx = fired(spike);
-            
-            
-        end
+        % Update SDVL variance
+        dv = zeros(size(t0_negu));
+        dv(abst0_negu < net.b2) = -k(abst0_negu < net.b2);
+        dv(abst0_negu >= net.b1) = k(abst0_negu >= net.b1);
+
+        variance(:, fired) = variance(:, fired) + (dv .* conns(:, fired));
+        variance(conns) = max(net.variance_min, min(net.variance_max, variance(conns)));
+  
+
         dApre = dApre * STDPdecaypre;
         dApost = dApost * STDPdecaypost;
         active_idx = mod(active_idx, net.delay_max) + 1;
