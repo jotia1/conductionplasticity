@@ -57,7 +57,7 @@ for sec = 1 : net.sim_time_sec
         %% Calculate input
         Iapp = zeros(size(v));
         t0 = time - last_spike_time;  % TODO will need to reshape this (vector) to match delays (matrix)
-        t0_negu = t0 - delays;
+        t0_negu = t0 - round(delays);
         p = net.fgi ./ sqrt(2 * pi * variance);
         g = p .* exp(- (t0_negu .^ 2) ./ (2 * variance));
         gaussian_values = w .* g;
@@ -83,7 +83,7 @@ for sec = 1 : net.sim_time_sec
         spike_time_trace = [spike_time_trace; time*ones(length(fired),1), fired];
         last_spike_time(fired) = time; 
         
-        v(fired_naturally) = net.v_reset;
+        v(fired) = net.v_reset;
         
         %% STDP
         % Any pre-synaptics weights should be increased
