@@ -11,13 +11,13 @@ net.N = sum(net.group_sizes);
 net.rand_seed = 1;
 
 net.delays = zeros(net.N);
-net.delays(1:3, 4:5) = 1;
+net.delays(1:3, 4:5) = 5;
 net.variance = zeros(net.N);
-net.variance(1:3, 4:5) = 1;
+net.variance(1:3, 4:5) = 2;
 net.w = zeros(net.N);
 net.w(1:3, 4:5) = 1;
 
-net.fgi = 70;
+net.fgi = 65;
 net.nu = 0.03;
 net.nv = 0.01;
 net.a1 = 3;
@@ -38,20 +38,22 @@ net.taupost = 20;
 net.Apost = 0;%0.1;
 net.Apre = 0;%-0.1;
 
-net.sim_time_sec = 100;
+net.sim_time_sec = 10000;
 seq = [0, 3, 7];
 net.inp = repmat(1:3, 1, net.sim_time_sec * 2); %[1, 2, 3, 1, 2 ,3];
 net.ts = reshape(repmat(((0:(net.sim_time_sec * 2) -1 )' * 500)', 3, 1), 1, net.sim_time_sec * 3 * 2) + ...
         repmat(seq, 1, net.sim_time_sec * 2) + 1; %[1, 5, 8, 501, 505, 508];
 
 % Set up supervision
-net.supervised_seconds = 70;
+net.supervised_seconds = 50;
 net.inp = [net.inp, ones(1, net.supervised_seconds * 2) * length(seq) + 1];
 net.ts = [net.ts, ((0:0.5:net.supervised_seconds - 0.5) * 1000) + 13];
  
     
     
 net.voltages_to_save = [1 : net.N];
+net.variance_to_save = [1 : net.N];
+net.delays_to_save = [1 : net.N];
 
 
 
